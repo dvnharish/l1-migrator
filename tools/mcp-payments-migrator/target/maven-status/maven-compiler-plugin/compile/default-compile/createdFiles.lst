@@ -1,0 +1,15 @@
+com\elavon\migrator\mcp\tools\ToolCreateBranchAndPr.class
+com\elavon\migrator\mcp\tools\ToolFetchSpecs.class
+com\elavon\migrator\mcp\tools\ToolApplyMappings.class
+com\elavon\migrator\mcp\util\LogRedactor.class
+com\elavon\migrator\mcp\core\JsonRpcServer.class
+com\elavon\migrator\mcp\tools\ToolRevertChanges.class
+com\elavon\migrator\mcp\tools\ToolGenerateSdk.class
+com\elavon\migrator\mcp\tools\ToolGenerateDtos.class
+com\elavon\migrator\mcp\util\SimpleSchemaValidator.class
+com\elavon\migrator\mcp\tools\ToolSupport.class
+com\elavon\migrator\mcp\McpServerApplication.class
+com\elavon\migrator\mcp\util\Json.class
+com\elavon\migrator\mcp\tools\ToolBuildAndTest.class
+com\elavon\migrator\mcp\tools\ToolRegistry.class
+com\elavon\migrator\mcp\tools\ToolPlanMigration.class

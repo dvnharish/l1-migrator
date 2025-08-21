@@ -1,3 +1,4 @@
+com\elavon\migrator\mcp\util\SpecLocator.class
 com\elavon\migrator\mcp\tools\ToolCreateBranchAndPr.class
 com\elavon\migrator\mcp\tools\ToolFetchSpecs.class
 com\elavon\migrator\mcp\tools\ToolApplyMappings.class

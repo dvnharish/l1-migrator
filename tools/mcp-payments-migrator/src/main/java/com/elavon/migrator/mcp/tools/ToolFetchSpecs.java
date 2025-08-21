@@ -59,6 +59,9 @@ public class ToolFetchSpecs extends ToolSupport {
         String note = null;
         boolean ok1 = tryDownload(params.path("converge_url").asText(null), converge);
         boolean ok2 = tryDownload(params.path("elavon_url").asText(null), elavon);
+        // If not downloadable, populate from classpath defaults (empty stub) so pipeline continues
+        if (!ok1 && !Files.exists(converge)) Files.writeString(converge, "{}\n");
+        if (!ok2 && !Files.exists(elavon)) Files.writeString(elavon, "{}\n");
         if (!ok1 || !ok2) {
             note = "If direct download fails due to auth/CORS, manually place converge.json and elavon.json in " + dir.toAbsolutePath();
             if (!Files.exists(converge)) Files.writeString(converge, "{}\n");

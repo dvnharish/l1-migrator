@@ -20,7 +20,7 @@ This mono-repo contains a Model Context Protocol (MCP) server named `payments-mi
 
 2) Run the server (stdio JSON-RPC):
 ```
-java -jar tools/mcp-payments-migrator/target/mcp-payments-migrator.jar
+java -jar tools/mcp-payments-migrator/target/mcp-payments-migrator-0.1.0-SNAPSHOT.jar
 ```
 
 3) Test MCP handshake with a simple `tools/list` request (type JSON line and press Enter):
@@ -63,10 +63,42 @@ Each tool provides strict JSON Schemas for parameters and results. All logs are 
 
 See `tools/mcp-payments-migrator/MCP-README.md` for request/response examples.
 
+### MCP client configuration
+Configure your MCP client to launch the server as a local process over stdio.
+
+- Command:
+  - Windows: `java -jar tools\\mcp-payments-migrator\\target\\mcp-payments-migrator-0.1.0-SNAPSHOT.jar`
+  - macOS/Linux: `java -jar tools/mcp-payments-migrator/target/mcp-payments-migrator-0.1.0-SNAPSHOT.jar`
+
+Example (generic JSON for MCP-capable IDEs):
+```
+{
+  "name": "payments-migrator",
+  "command": "java",
+  "args": [
+    "-jar",
+    "tools/mcp-payments-migrator/target/mcp-payments-migrator-0.1.0-SNAPSHOT.jar"
+  ],
+  "env": {
+    "DEFAULT_REPO_ROOT": "${workspaceFolder}"
+  }
+}
+```
+
+On connect, the client will call `initialize`; the server responds and publishes `initialized`, and `tools/list` will show the tool registry with descriptions and JSON Schemas.
+
+### Example prompts (agent-facing)
+- "Plan the migration from Converge XML to Elavon for this repo."
+- "Fetch Converge and Elavon OpenAPI specs to tools/mcp-payments-migrator/specs."
+- "Generate DTOs for TransactionInput, Card, Contact, Total, Transaction."
+- "Apply Elavon mappings, unify the controller to POST /api/sale, and remove legacy XML."
+- "Build and test the project and return logs."
+- "Create a branch feat/migrate-converge-to-elavon and open a PR."
+
 ### Architecture (Mermaid)
 ```mermaid
 graph TD
-  A[Client (IDE/Agent)] -->|JSON-RPC 2.0 over stdio| B[MCP Server (Spring Boot)]
+  A[Client (IDE/Agent)] -->|stdio JSON-RPC| B[MCP Server (Spring Boot)]
   B --> C[Tools Registry]
   C --> D[Filesystem / Git]
   C --> E[OpenAPI Generator]
@@ -101,7 +133,7 @@ sequenceDiagram
 - Validates tool parameters and outputs against JSON Schemas
 
 ### Development
-- Java 17, Spring Boot 3.x, Spring AI, Jackson
+- Java 17, Spring Boot 3.x, Jackson
 - Fat JAR packaging, console application only (no HTTP server)
 
 

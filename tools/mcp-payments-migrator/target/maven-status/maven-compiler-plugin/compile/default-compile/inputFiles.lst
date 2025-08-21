@@ -12,4 +12,5 @@ D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator
 D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator\mcp\core\JsonRpcServer.java
 D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator\mcp\tools\ToolRegistry.java
 D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator\mcp\tools\ToolRevertChanges.java
+D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator\mcp\util\SpecLocator.java
 D:\elavon-migrator\tools\mcp-payments-migrator\src\main\java\com\elavon\migrator\mcp\tools\ToolGenerateSdk.java

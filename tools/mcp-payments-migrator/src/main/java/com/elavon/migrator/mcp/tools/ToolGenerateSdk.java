@@ -50,11 +50,31 @@ public class ToolGenerateSdk extends ToolSupport {
         Files.createDirectories(Paths.get(outDir));
         ArrayNode langs = (ArrayNode) params.get("languages");
         List<String> paths = new ArrayList<>();
+        String specPath = com.elavon.migrator.mcp.util.SpecLocator.resolveElavonSpec().toString();
         for (JsonNode lang : langs) {
             String l = lang.asText();
             Path sdkPath = Paths.get(outDir).resolve("sdk").resolve(l);
             Files.createDirectories(sdkPath);
-            Files.writeString(sdkPath.resolve("README.md"), "SDK placeholder for " + l + " generated from OpenAPI.\n");
+            String generator = switch (l) {
+                case "java" -> "java";
+                case "typescript" -> "typescript-fetch";
+                case "python" -> "python";
+                case "csharp" -> "csharp";
+                default -> "java";
+            };
+            String[] cmd = new String[]{
+                    "mvn", "-q",
+                    "org.openapitools:openapi-generator-maven-plugin:7.6.0:generate",
+                    "-DgeneratorName=" + generator,
+                    "-DinputSpec=" + specPath,
+                    "-Doutput=" + sdkPath.toAbsolutePath()
+            };
+            try {
+                Process p = new ProcessBuilder().command(cmd).redirectErrorStream(true).start();
+                p.waitFor();
+            } catch (Exception e) {
+                Files.writeString(sdkPath.resolve("README.md"), "SDK generation failed; placeholder created.\n");
+            }
             paths.add(sdkPath.toString());
         }
         ObjectNode result = m.createObjectNode();

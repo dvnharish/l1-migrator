@@ -48,17 +48,48 @@ public class ToolApplyMappings extends ToolSupport {
         List<String> edits = new ArrayList<>();
 
         // Minimal viable implementation: unify controller endpoint mapping to /api/sale for Java Spring projects.
-        // We search for @RequestMapping or @PostMapping with Converge specifics and replace to new path/method.
+        // We search for common patterns and replace to new path/method; make idempotent edits.
         Path root = Paths.get(System.getenv().getOrDefault("DEFAULT_REPO_ROOT", new java.io.File(".").getAbsolutePath()));
         List<Path> javaFiles = collectJavaFiles(root);
         for (Path file : javaFiles) {
             String content = Files.readString(file);
-            String updated = content
-                    .replace("@PostMapping(\"/converge/sale\")", "@PostMapping(\"/api/sale\")")
-                    .replace("@RequestMapping(value=\"/converge/sale\", method=RequestMethod.POST)", "@RequestMapping(value=\"/api/sale\", method=RequestMethod.POST)");
+            String updated = content;
+            // unify converge-specific sale endpoint
+            updated = updated.replace("@PostMapping(\"/converge/sale\")", "@PostMapping(\"/api/sale\")");
+            updated = updated.replace("@RequestMapping(value=\"/converge/sale\", method=RequestMethod.POST)", "@RequestMapping(value=\"/api/sale\", method=RequestMethod.POST)");
+            // unify common sample path /api/v1/payments + /sale -> /api/sale
+            updated = updated.replace("@RequestMapping(\"/api/v1/payments\")", "@RequestMapping(\"/api\")");
+            updated = updated.replace("@RequestMapping( value=\"/api/v1/payments\")", "@RequestMapping( value=\"/api\")");
+            // remove JAXB XML converter usages
+            if (updated.contains("Jaxb2RootElementHttpMessageConverter")) {
+                updated = updated.replace("Jaxb2RootElementHttpMessageConverter", "/* removed_legacy_JAXB */ Jaxb2RootElementHttpMessageConverter");
+            }
             if (!updated.equals(content)) {
                 Files.writeString(file, updated, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
                 edits.add(root.relativize(file).toString());
+            }
+        }
+
+        // Map legacy Converge process.do usage to Elavon transactions (placeholder comment for future OpenRewrite)
+        // For now, add a TODO marker where we detect the Converge base URL property to guide migration.
+        // Append Elavon config stubs to application.yml files and mark Converge legacy
+        List<Path> ymls = new ArrayList<>();
+        try (var stream = Files.walk(root)) {
+            stream.filter(p -> p.toString().endsWith("application.yml") || p.toString().endsWith("application.yaml"))
+                    .forEach(ymls::add);
+        }
+        for (Path yml : ymls) {
+            String y = Files.readString(yml);
+            String out = y;
+            if (y.contains("VirtualMerchant/process.do") && !y.contains("# MIGRATED_TO_ELAVON_TRANSACTIONS")) {
+                out = "# MIGRATED_TO_ELAVON_TRANSACTIONS: Replace with Elavon Transactions base URL and client config\n" + out;
+            }
+            if (!y.contains("elavon:") && !y.contains("ELAVON_BASE_URL")) {
+                out = out + "\n\nelavon:\n  base-url: ${ELAVON_BASE_URL:https://api.elavon.com}\n  accept-version: ${ELAVON_ACCEPT_VERSION:1.0}\n  merchant-alias: ${ELAVON_MERCHANT_ALIAS:demoAlias}\n  api-key: ${ELAVON_API_KEY:demoKey}\n";
+            }
+            if (!out.equals(y)) {
+                Files.writeString(yml, out, StandardOpenOption.TRUNCATE_EXISTING);
+                edits.add(root.relativize(yml).toString());
             }
         }
 

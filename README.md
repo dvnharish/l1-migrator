@@ -102,7 +102,7 @@ graph TD
   B --> C[Tools Registry]
   C --> D[Filesystem / Git]
   C --> E[OpenAPI Generator]
-  C --> F[HTTP (spec fetch)]
+  C --> F[HTTP spec fetch]
   C --> G[OpenRewrite / Refactor]
 ```
 

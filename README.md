@@ -98,7 +98,7 @@ On connect, the client will call `initialize`; the server responds and publishes
 ### Architecture (Mermaid)
 ```mermaid
 graph TD
-  A[Client IDE/Agent] -->|stdio JSON-RPC| B[MCP Server (Spring Boot)]
+  A[Client IDE/Agent] -->|stdio JSON-RPC| B[MCP Server Spring Boot]
   B --> C[Tools Registry]
   C --> D[Filesystem / Git]
   C --> E[OpenAPI Generator]
